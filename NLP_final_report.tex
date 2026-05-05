@@ -10,6 +10,7 @@
 \usepackage{amsmath}
 \usepackage{url}
 
+% Slightly enlarge the title box to fit authors cleanly.
 \setlength\titlebox{5.0cm}
 
 \title{Retrieval-Based Scientific Claim Verification with SciFact}
@@ -26,46 +27,90 @@
 \maketitle
 
 \begin{abstract}
-We study scientific claim verification on SciFact, where a system must retrieve evidence-bearing biomedical abstracts and predict whether the evidence \textsc{Supports}, \textsc{Refutes}, or provides \textsc{NoInfo} for a claim. We build a two-stage pipeline with abstract retrieval followed by document-level stance verification, and compare lexical baselines against dense retrieval and pretrained biomedical encoders. Dense MPNet retrieval improves evidence retrieval over TF--IDF, raising Recall@5 from 0.803 to 0.872 and MRR from 0.657 to 0.743. For verification, fine-tuned \textsc{SciBERT} improves oracle macro-F1 from 0.359 for logistic regression to 0.676. In the full pipeline, Dense+\textsc{SciBERT} reaches JointHit@5 of 0.521. We further add error analysis, a sentence-level evidence-selection experiment, and a \textsc{PubMedBERT} verifier. The strongest final system, Dense+\textsc{PubMedBERT}, reaches JointHit@5 of 0.564. Our analysis shows that retrieval is no longer the dominant bottleneck: at top-5, only 12.8\% of evidence-bearing claims are retrieval misses, while 35.1\% fail because a retrieved gold abstract receives the wrong stance label.
+We study scientific claim verification on SciFact, where a system must retrieve biomedical evidence abstracts and predict whether the evidence \textsc{Supports}, \textsc{Refutes}, or provides \textsc{NoInfo} for a claim. We implement a two-stage retrieval-and-verification pipeline and compare lexical baselines with dense retrieval and biomedical transformer verifiers. Dense MPNet retrieval improves over TF--IDF, raising Recall@5 from 0.803 to 0.872 and MRR from 0.657 to 0.743. For oracle document verification, fine-tuned \textsc{SciBERT} improves macro-F1 from 0.359 for logistic regression to 0.676. In the end-to-end pipeline, Dense+\textsc{SciBERT} reaches JointHit@5 of 0.521, while our strongest final system, Dense+\textsc{PubMedBERT}, reaches 0.564. We also perform sentence-level evidence selection and error analysis. The analysis shows that retrieval is no longer the main bottleneck: at top-5, only 12.8\% of evidence-bearing claims are retrieval misses, while 35.1\% fail because a retrieved gold abstract receives the wrong stance label.
 \end{abstract}
 
 \section{Introduction}
-Scientific claim verification asks whether a natural-language scientific claim is supported or contradicted by evidence in the literature. This is more difficult than ordinary document retrieval because lexical relevance is not enough: an abstract can mention the same entities as a claim while failing to verify it, and a true evidence abstract may use different wording from the claim. We use SciFact, a closed-corpus benchmark with 1,409 expert-written claims and 5,183 biomedical abstracts, to study this problem in a realistic but manageable setting \citep{wadden2020fact}.
+This proposal outlines an \textbf{empirical project} on scientific claim verification. We will study how to build a system that reads a scientific claim, searches a corpus of paper abstracts, and predicts whether the retrieved evidence \textsc{Supports} the claim, \textsc{Refutes} it, or provides \textsc{NoInfo}. We will use the SciFact dataset because it offers a realistic benchmark for evidence-based scientific reasoning while still being manageable for a course project. SciFact is a closed-corpus benchmark with 1,409 expert-written scientific claims, a corpus of 5,183 biomedical abstracts, and a standard split of 809 training claims, 300 development claims, and 300 test claims \citep{wadden2020fact}. To keep the project scope realistic, we will focus on abstract retrieval and abstract-level stance classification; sentence-level rationale extraction will be treated as a possible extension rather than a required first-stage goal.
 
-Our project focuses on abstract retrieval and abstract-level stance classification. Given a claim $c$ and a corpus $\mathcal{D}$, the retriever returns the top-$k$ candidate abstracts,
+\subsection{What Are We Trying To Do?}
+Our project studies a central NLP question: can a model retrieve evidence that is not only topically related to a claim, but actually justifies or refutes it? This task is important because scientific search is not the same as keyword search. An abstract may mention the same terms as a claim and still fail to provide useful evidence, while another abstract with different wording may directly support or refute it. SciFact was introduced specifically to study this setting of evidence-grounded scientific claim verification \citep{wadden2020fact}.
+
+Formally, let $c$ be a claim and let $\mathcal{D}$ be a corpus of scientific abstracts. Our system has two stages. First, a retriever returns the top-$k$ candidate abstracts,
 \begin{equation}
-R_k(c) = \operatorname{TopK}_{a \in \mathcal{D}}\; \mathrm{sim}(g(c), g(a)).
+R_k(c) = \operatorname{TopK}_{a \in \mathcal{D}}\; \mathrm{sim}(g(c), g(a)),
 \end{equation}
-For each retrieved claim--abstract pair $(c,a)$, a verifier predicts
+where $g(\cdot)$ maps text into an embedding space. Then, for each retrieved pair $(c,a)$, a classifier predicts a label,
 \begin{equation}
-\hat{y}=f_{\theta}(c,a), \qquad
-\hat{y}\in\{\textsc{Supports},\textsc{Refutes},\textsc{NoInfo}\}.
+\hat{y} = f_{\theta}(c,a), \qquad \hat{y} \in \{\textsc{Supports},\textsc{Refutes},\textsc{NoInfo}\}.
 \end{equation}
-The full system succeeds only when it retrieves a gold evidence abstract and assigns the correct stance label.
+The system succeeds only if it retrieves useful evidence and assigns the correct stance label.
 
-The midway version of the project implemented the core two-stage pipeline and showed that dense retrieval plus a fine-tuned \textsc{SciBERT} verifier strongly outperformed a lexical TF--IDF plus logistic-regression baseline. In the final stage, we extend that work in three directions: detailed error analysis, a sentence-level evidence-selection experiment, and a stronger biomedical verifier based on \textsc{PubMedBERT} \citep{gu2021domain}. These additions let us ask not only which system performs best, but also where the remaining failures come from.
+\subsection{Example of Input and Output}
+Our project has two clear components.
 
-\section{Methods}
-\subsection{Dataset and Pair Construction}
-We use the official SciFact train and development splits \citep{wadden2020fact}. The train split contains 809 claims, the development split contains 300 claims, and the corpus contains 5,183 abstracts. Because the public test labels are not available, all reported quantitative results are on the development set.
+\paragraph{1. The Evidence Retriever}
+This module searches the SciFact corpus for abstracts that may contain evidence.
+\begin{itemize}
+    \item \textbf{Input:} A natural-language scientific claim and the full abstract corpus.
+    \item \textbf{Output:} A ranked top-$k$ list of candidate abstracts.
+\end{itemize}
 
-To train verifiers, we construct document-level claim--abstract pairs. Each annotated evidence document becomes a positive pair labeled \textsc{Supports} or \textsc{Refutes}. For each claim, we also add four \textsc{NoInfo} negative pairs. These negatives are sampled first from cited but non-evidence documents, then from TF--IDF hard negatives, and finally from random corpus documents when needed. This produces 3,800 training pairs and 1,409 development pairs. The development pair labels are imbalanced: 1,200 \textsc{NoInfo}, 138 \textsc{Supports}, and 71 \textsc{Refutes} examples, so macro-F1 is a more informative verifier metric than accuracy alone.
+\paragraph{2. The Claim Verifier}
+This module decides whether a retrieved abstract supports the claim, refutes it, or contains no real evidence.
+\begin{itemize}
+    \item \textbf{Input:} A claim--abstract pair $(c,a)$.
+    \item \textbf{Output:} One label from \textsc{Supports}, \textsc{Refutes}, or \textsc{NoInfo}.
+\end{itemize}
 
-\subsection{Retrieval Models}
-Our lexical retriever is a TF--IDF model over each document's title and abstract, using unigram and bigram features. Our dense retriever uses \texttt{sentence-transformers/all-mpnet-base-v2}, which encodes claims and abstracts into a shared embedding space and ranks documents by cosine similarity \citep{reimers2019sentence,song2020mpnet}. The dense retriever is used as a fixed pretrained encoder rather than being fine-tuned on SciFact.
+For example, if the claim is ``Drug X reduces the risk of disease Y,'' the retriever should find relevant abstracts about Drug X and disease Y, and the verifier should judge whether each abstract actually supports, refutes, or fails to verify that statement.
 
-\subsection{Verification Models}
-The lexical verifier is multinomial logistic regression over TF--IDF features of the concatenated claim and abstract. We compare it with two transformer verifiers. The first is \texttt{allenai/scibert\_scivocab\_uncased}, a domain-specific encoder pretrained on scientific text \citep{beltagy2019scibert}. The second is \texttt{microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext}, which is pretrained from scratch on biomedical literature \citep{gu2021domain}. Both transformer verifiers are fine-tuned for three-way classification with class-weighted cross-entropy, mixed-precision GPU training, learning rate $2\times10^{-5}$, batch size 16, maximum sequence length 256, and checkpoint selection by internal development macro-F1.
+\subsection{How Will We Build and Evaluate the System?}
+We will use the SciFact corpus and claim splits as our dataset \citep{wadden2020fact}. Our software stack will include Python, PyTorch, Hugging Face Transformers, Sentence-Transformers, FAISS, and scikit-learn. For dense retrieval, we plan to use a sentence embedding model such as Sentence-BERT with cosine similarity over a FAISS index \citep{reimers2019sentence,johnson2017billion}. For verification, we plan to fine-tune a pretrained encoder such as SciBERT or RoBERTa on claim--abstract pairs \citep{beltagy2019scibert,liu2019roberta}. If full fine-tuning is too expensive, we will freeze the encoder and train a lightweight classifier on top.
 
-\subsection{Sentence-Level Evidence Selection}
-The midway system treated entire abstracts as evidence units. We test whether a targeted evidence-selection stage can improve verification. We implement an unsupervised TF--IDF sentence selector: for each claim--abstract pair, it ranks sentences in the abstract by cosine similarity to the claim and keeps the top two sentences, preserving their original abstract order. We evaluate this selector directly against gold SciFact rationale sentence annotations, and we also train a \textsc{SciBERT} verifier on the selected sentence text instead of full abstracts.
+Our \textbf{baseline} will be simple and easy to implement: the official SciFact TF--IDF retriever, followed by a multinomial logistic regression classifier over TF--IDF features of the concatenated claim and abstract. This gives us a transparent lexical baseline for the full pipeline.
 
-\subsection{Evaluation Metrics}
-For retrieval, we report Recall@$k$ and mean reciprocal rank (MRR) over evidence-bearing development claims. For oracle verification, we evaluate verifiers on gold and negative claim--document pairs using accuracy, macro-F1, and per-class F1. For the full pipeline, we report JointHit@$k$: a claim is counted as correct if at least one gold evidence abstract appears in the top-$k$ retrieved list and receives the correct stance label. For sentence selection, we report rationale Hit@$k$ and rationale Coverage@$k$ over gold claim--document evidence pairs.
+Our main system will replace both stages with stronger pretrained models. For retrieval, we plan to use a sentence embedding model with cosine similarity over a FAISS index for dense retrieval. For verification, we plan to fine-tune a pretrained encoder such as SciBERT or RoBERTa on claim--abstract pairs. We will compare whether dense retrieval improves over TF--IDF and whether a scientific-domain or strong general-domain encoder improves over the lexical baseline.
 
-\section{Results}
-\subsection{Retrieval}
-Dense retrieval clearly improves over the TF--IDF retriever (Table~\ref{tab:retrieval}). The gain is consistent across all cutoffs: Recall@5 increases from 0.803 to 0.872, Recall@10 from 0.856 to 0.931, and MRR from 0.657 to 0.743. This confirms that semantic matching helps recover evidence abstracts that are not captured by lexical overlap alone.
+We will evaluate retrieval with Recall@$k$ (for example, $k \in \{3,5,10\}$), mean reciprocal rank, and evidence hit rate. We will evaluate classification with macro-F1, per-class F1, and accuracy. Because this is a pipeline, we will also report an end-to-end metric: whether a gold evidence abstract appears in the top-$k$ retrieved set and receives the correct label. We will consider the project successful if dense retrieval improves evidence recall over TF--IDF and the encoder-based verifier improves macro-F1 over the lexical baseline.
+
+\subsection{How Will This Project Be Helpful?}
+This project is useful for three reasons:
+\begin{itemize}
+    \item \textbf{Improving Scientific Search:} It studies how NLP systems can move from topical retrieval to evidence-based claim verification.
+    \item \textbf{Understanding Errors:} Because the system is modular, we can separate retrieval failures from classification failures and analyze them clearly.
+    \item \textbf{Building a Feasible End-to-End Project:} SciFact is realistic enough to be meaningful, but compact enough for controlled experimentation in a course setting.
+\end{itemize}
+
+\section{Description of Progress}
+\subsection{Methods}
+We have implemented the two-stage pipeline proposed above and evaluated both component-level and end-to-end performance. Our current baseline retriever is a TF--IDF system over the concatenated title and abstract of each SciFact document. Our stronger retriever is a dense semantic retriever based on \texttt{sentence-transformers/all-mpnet-base-v2}, which encodes claims and abstracts into a shared embedding space and ranks documents by vector similarity. In this midway stage, the dense retriever is used as a fixed pretrained encoder rather than being fine-tuned on SciFact \citep{song2020mpnet}.
+
+For verification, we implemented two document-level classifiers. The baseline verifier is multinomial logistic regression over TF--IDF features extracted from the concatenated claim and abstract. Our stronger verifier is \textsc{SciBERT} fine-tuned for three-way claim verification (\textsc{Supports}, \textsc{Refutes}, \textsc{NoInfo}) \citep{beltagy2019scibert}. We fine-tune \texttt{allenai/scibert\_scivocab\_uncased} on claim--abstract pairs using class-weighted cross-entropy, mixed-precision GPU training, and checkpoint selection by development macro-F1. The final model was trained for up to 10 epochs, and the best checkpoint appeared at epoch 6.
+
+To train the verifier, we construct document-level pairs from the SciFact annotations. Every gold evidence document for a claim becomes a positive pair labeled \textsc{Supports} or \textsc{Refutes}. We then add four \textsc{NoInfo} negatives per claim, first from cited-but-non-evidence documents, then from TF--IDF hard negatives, and finally from random corpus negatives when needed. This gives the verifier a realistic mixture of easy and difficult negative examples.
+
+\subsection{Experiments}
+We use the official SciFact train and development splits \citep{wadden2020fact}. The corpus contains 5,183 abstracts. The train split contains 809 claims, and the development split contains 300 claims. After pair construction, the verifier is trained on 3,800 claim--document pairs and evaluated on 1,409 development pairs. The label distribution is imbalanced, with \textsc{NoInfo} as the majority class, so macro-F1 is especially important for model comparison.
+
+We report three kinds of evaluation. For retrieval, we measure Recall@$k$ for $k \in \{3,5,10\}$, mean reciprocal rank (MRR), and evidence coverage. For oracle document classification, we measure accuracy, macro-F1, and per-class F1. For full-pipeline evaluation, we report \textit{JointHit@$k$}, which counts a claim as correct if at least one gold evidence document appears in the top-$k$ retrieved set and also receives the correct stance label. This lets us distinguish whether an improvement comes from retrieval, verification, or both.
+
+All reported midway experiments were run on a single GPU with mixed precision. The stronger verifier used a train batch size of 16, an evaluation batch size of 32, a learning rate of $2\times10^{-5}$, and a maximum sequence length of 256. Training the \textsc{SciBERT} verifier took about 412 seconds in total.
+
+\begin{figure}[t]
+\centering
+\begin{minipage}{0.48\linewidth}
+\centering
+\includegraphics[width=\linewidth]{final_figures/retrieval_recall_curve.png}
+\end{minipage}
+\hfill
+\begin{minipage}{0.48\linewidth}
+\centering
+\includegraphics[width=\linewidth]{final_figures/transformer_confusion_matrix.png}
+\end{minipage}
+\caption{Left: development-set retrieval recall for TF--IDF and dense retrieval. Right: confusion matrix for the fine-tuned \textsc{SciBERT} verifier on oracle document classification.}
+\label{fig:results}
+\end{figure}
 
 \begin{table}[t]
 \centering
@@ -75,15 +120,51 @@ Dense retrieval clearly improves over the TF--IDF retriever (Table~\ref{tab:retr
 \textbf{Retriever} & \textbf{R@3} & \textbf{R@5} & \textbf{R@10} & \textbf{MRR} \\
 \hline
 TF--IDF & 0.761 & 0.803 & 0.856 & 0.657 \\
-Dense MPNet & \textbf{0.798} & \textbf{0.872} & \textbf{0.931} & \textbf{0.743} \\
+Dense (\texttt{all-mpnet-base-v2}) & \textbf{0.798} & \textbf{0.872} & \textbf{0.931} & \textbf{0.743} \\
 \hline
 \end{tabular}
-\caption{Retrieval performance on evidence-bearing SciFact development claims.}
+\caption{Retrieval performance on the SciFact development set.}
 \label{tab:retrieval}
 \end{table}
 
-\subsection{Oracle Verification}
-Table~\ref{tab:oracle} shows that transformer verifiers substantially outperform the lexical verifier. Logistic regression achieves high accuracy because most development pairs are \textsc{NoInfo}, but its macro-F1 is only 0.359 and it performs very poorly on \textsc{Supports} and \textsc{Refutes}. \textsc{SciBERT} improves macro-F1 to 0.676, with much stronger positive-label F1. \textsc{PubMedBERT} reaches a very similar macro-F1 of 0.674 and slightly improves \textsc{Refutes} F1 from 0.391 to 0.400.
+\begin{table}[t]
+\centering
+\small
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lcccc}
+\hline
+\textbf{Verifier / Pipeline} & \textbf{Accuracy} & \textbf{Macro-F1} & \textbf{JointHit@3} & \textbf{JointHit@5} \\
+\hline
+TF--IDF + Logistic Regression & 0.836 & 0.359 & 0.048 & 0.053 \\
+TF--IDF + \textsc{SciBERT} & --- & --- & 0.452 & 0.479 \\
+Dense + Logistic Regression & --- & --- & 0.053 & 0.059 \\
+Dense + \textsc{SciBERT} & --- & --- & \textbf{0.484} & \textbf{0.521} \\
+\hline
+\textsc{SciBERT} oracle verifier & \textbf{0.913} & \textbf{0.676} & --- & --- \\
+\hline
+\end{tabular}
+}
+\caption{Oracle verification and end-to-end pipeline results. The TF--IDF + Logistic Regression line serves as the full lexical baseline.}
+\label{tab:pipeline}
+\end{table}
+
+\subsection{Results}
+Our main midway result is that the stronger models improve both retrieval and verification, and these gains transfer to the full pipeline. As shown in Table~\ref{tab:retrieval}, dense retrieval outperforms TF--IDF at every cutoff, with especially clear gains at Recall@5, Recall@10, and MRR. This suggests that semantic matching is more effective than pure lexical overlap for finding evidence-bearing abstracts in SciFact.
+
+The verifier comparison shows an even larger gap. The lexical verifier achieves reasonable overall accuracy because it handles the dominant \textsc{NoInfo} class fairly well, but its macro-F1 is low and it performs poorly on \textsc{Supports} and especially \textsc{Refutes}. In contrast, the fine-tuned \textsc{SciBERT} verifier substantially improves macro-F1 and produces a much more balanced confusion matrix (Figure~\ref{fig:results}). This is encouraging because it suggests that domain-specific pretrained encoders are already useful at the abstract level, even without rationale extraction.
+
+The end-to-end results in Table~\ref{tab:pipeline} confirm that both stages matter. Replacing only the retriever while keeping the lexical verifier gives almost no gain, which indicates that verification is the main bottleneck in the baseline pipeline. Replacing the verifier with \textsc{SciBERT} gives a large jump, and combining dense retrieval with \textsc{SciBERT} gives the strongest overall system. The best system reaches JointHit@5 of 0.521, compared with 0.053 for the full lexical baseline. A remaining weakness is that \textsc{Refutes} examples are still harder than \textsc{Supports}, and development performance peaks around epoch 6 before fluctuating, which suggests mild overfitting on this small dataset.
+
+\section{Final-Stage Experiments}
+The final stage of the project follows the three directions described in the midway plan. First, we add a detailed error analysis to separate retrieval misses from stance classification errors. Second, we test a sentence-level evidence-selection stage, since the midway pipeline treated each full abstract as the evidence unit. Third, we compare \textsc{SciBERT} with \textsc{PubMedBERT}, a biomedical language model pretrained from scratch on PubMed abstracts and full-text articles \citep{gu2021domain}.
+
+\subsection{Additional Methods}
+For sentence-level evidence selection, we implement a simple unsupervised selector. For each claim--abstract pair, we rank abstract sentences by TF--IDF cosine similarity to the claim, then keep the top two sentences in their original abstract order. This gives a more targeted evidence input while avoiding the need to train a separate rationale extractor. We evaluate this selector directly against the gold SciFact rationale sentence annotations and also train a \textsc{SciBERT} verifier on these selected sentence inputs.
+
+For the additional biomedical verifier, we fine-tune \texttt{microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext} using the same document-pair construction and training setup as the \textsc{SciBERT} verifier: class-weighted cross-entropy, mixed precision, learning rate $2\times10^{-5}$, batch size 16, maximum sequence length 256, and best-checkpoint selection by internal validation macro-F1.
+
+\subsection{Additional Results}
+Table~\ref{tab:final_verifier} compares all oracle verifiers. The sentence-selected \textsc{SciBERT} verifier reaches macro-F1 of 0.654, below the full-abstract \textsc{SciBERT} score of 0.676. \textsc{PubMedBERT} reaches a very similar oracle macro-F1 of 0.674 and slightly improves \textsc{Refutes} F1 from 0.391 to 0.400.
 
 \begin{table}[t]
 \centering
@@ -100,12 +181,11 @@ Logistic Regression & 0.836 & 0.359 & 0.926 & 0.114 & 0.037 \\
 \hline
 \end{tabular}
 }
-\caption{Oracle document-level verification on development claim--abstract pairs.}
-\label{tab:oracle}
+\caption{Final oracle document-verification comparison on the SciFact development set.}
+\label{tab:final_verifier}
 \end{table}
 
-\subsection{End-to-End Pipeline}
-The full-pipeline results in Table~\ref{tab:pipeline} show that verification quality is crucial. Replacing TF--IDF retrieval with dense retrieval while keeping logistic regression barely changes JointHit@5, increasing it only from 0.053 to 0.059. In contrast, replacing the verifier with a transformer gives a much larger improvement. Dense+\textsc{SciBERT} reaches JointHit@5 of 0.521, and Dense+\textsc{PubMedBERT} gives the best final result, 0.564.
+Table~\ref{tab:final_pipeline} shows the corresponding end-to-end results. Dense+\textsc{PubMedBERT} is the strongest final system, reaching JointHit@5 of 0.564, compared with 0.521 for Dense+\textsc{SciBERT}. The sentence-selected pipeline reaches JointHit@5 of 0.473, which is lower than the full-abstract \textsc{SciBERT} pipeline. This suggests that the selected sentences often contain useful information, but the verifier still benefits from the broader abstract context.
 
 \begin{table}[t]
 \centering
@@ -123,8 +203,8 @@ Dense + \textsc{PubMedBERT} & abstract & \textbf{0.527} & \textbf{0.564} \\
 \hline
 \end{tabular}
 }
-\caption{End-to-end development results. JointHit@$k$ requires both retrieving a gold evidence abstract and predicting its correct stance label.}
-\label{tab:pipeline}
+\caption{Final end-to-end pipeline comparison. JointHit@$k$ requires retrieving a gold evidence abstract and assigning the correct stance label.}
+\label{tab:final_pipeline}
 \end{table}
 
 \begin{figure}[t]
@@ -142,10 +222,10 @@ Dense + \textsc{PubMedBERT} & abstract & \textbf{0.527} & \textbf{0.564} \\
 \label{fig:final_comparison}
 \end{figure}
 
-\subsection{Sentence Selection and Error Analysis}
-The sentence selector finds relevant rationale sentences reasonably often: Hit@1 is 0.474, Hit@2 is 0.651, and Hit@3 is 0.790 (Table~\ref{tab:analysis}). However, using only the top two selected sentences as verifier input hurts full-pipeline performance, reducing JointHit@5 from 0.521 for Dense+\textsc{SciBERT} with full abstracts to 0.473. This is a useful negative result. The selected sentences often include relevant keywords, but the verifier appears to benefit from broader abstract-level context, especially for distinguishing \textsc{NoInfo} from weak evidence.
+\subsection{Error Analysis}
+The sentence selector performs reasonably well at identifying rationale sentences: Rationale Hit@1 is 0.474, Hit@2 is 0.651, and Coverage@2 is 0.502. However, the lower end-to-end score of the sentence-selected verifier shows that sentence selection alone is not enough; removing surrounding abstract context can make stance prediction harder.
 
-The error analysis supports the same interpretation. For Dense+\textsc{SciBERT} at top-5, 98 of 188 evidence-bearing development claims are solved, 24 are retrieval misses, and 66 are stance errors. Thus only 12.8\% of evidence-bearing claims fail because no gold abstract is retrieved in the top five, while 35.1\% fail even though a gold abstract is retrieved. By label, top-5 stance errors are common for both \textsc{Supports} and \textsc{Refutes}: 34 \textsc{Supports} claims and 32 \textsc{Refutes} claims fall into this category. This suggests that remaining progress will depend more on evidence-aware verification than on simply retrieving more abstracts.
+For Dense+\textsc{SciBERT}, the top-5 error breakdown is: 98 successful claims, 24 retrieval misses, and 66 stance errors among 188 evidence-bearing development claims. In percentage terms, 52.1\% are solved, 12.8\% fail because no gold abstract is retrieved in the top five, and 35.1\% fail because a retrieved gold abstract receives the wrong stance label. The main remaining bottleneck is therefore not abstract retrieval, but stance classification under realistic retrieval noise.
 
 \begin{table}[t]
 \centering
@@ -162,13 +242,8 @@ Top-5 pipeline status & Success 52.1\% & Retrieval miss 12.8\% & Stance error 35
 \label{tab:analysis}
 \end{table}
 
-\section{Discussion}
-The experiments give a clear picture of the pipeline. First, dense retrieval is better than TF--IDF retrieval, but retrieval alone does not solve the task. Dense retrieval raises evidence recall, yet the logistic-regression verifier remains too weak to use those candidates effectively. Second, domain-specific transformer verifiers are the main source of improvement. \textsc{SciBERT} and \textsc{PubMedBERT} both dramatically outperform the lexical verifier, and \textsc{PubMedBERT} gives the strongest end-to-end system. Third, sentence-level evidence selection is not automatically beneficial. Although the TF--IDF selector often finds gold rationale sentences, compressing the evidence to two sentences removes context that the verifier needs for stance prediction.
-
-The most important takeaway is that the remaining bottleneck is stance verification under realistic retrieval noise. At top-10, dense retrieval misses only 6.9\% of evidence-bearing claims, but the pipeline still fails many claims because the verifier assigns the wrong label to retrieved evidence. Future improvements should therefore focus on better evidence aggregation, rationale-aware training, and calibration between \textsc{NoInfo} and true support/refutation.
-
 \section{Conclusion}
-We built and evaluated a retrieval-based scientific claim verification system for SciFact. Dense MPNet retrieval improves evidence retrieval over TF--IDF, and transformer verifiers greatly outperform a lexical classifier. The best final system combines dense retrieval with \textsc{PubMedBERT}, reaching JointHit@5 of 0.564 on the SciFact development set. Error analysis shows that retrieval is reasonably strong and that stance prediction is now the main bottleneck. Our sentence-selection experiment further shows that evidence targeting must preserve enough context for verification, rather than simply shortening abstracts to the most lexically similar sentences.
+Overall, the final experiments reinforce the midway finding that both retrieval and verification matter, but they also clarify where the system still fails. Dense retrieval substantially improves evidence recall over TF--IDF, and transformer verifiers greatly outperform the lexical verifier. The best final system is Dense+\textsc{PubMedBERT}, with JointHit@5 of 0.564 on the SciFact development set. The error analysis shows that once dense retrieval is used, many remaining failures are stance errors rather than retrieval misses. Future work should therefore focus on better evidence-aware verification, stronger rationale supervision, and methods that can use sentence-level evidence without losing useful abstract-level context.
 
 \section*{Author Contributions}
 Jiapei Liao contributed to system implementation, experiment execution, analysis, and report writing. Yuxiang Liu contributed to project design, experiment planning, result interpretation, and report editing.
@@ -187,6 +262,16 @@ Iz Beltagy, Kyle Lo, and Arman Cohan. 2019.
 Yu Gu, Robert Tinn, Hao Cheng, Michael Lucas, Naoto Usuyama, Xiaodong Liu, Tristan Naumann, Jianfeng Gao, and Hoifung Poon. 2021.
 \newblock Domain-specific language model pretraining for biomedical natural language processing.
 \newblock \textit{ACM Transactions on Computing for Healthcare}, 3(1):1--23.
+
+\bibitem[Johnson et~al.(2017)Johnson, Douze, and J\'egou]{johnson2017billion}
+Jeff Johnson, Matthijs Douze, and Herv\'{e} J\'{e}gou. 2017.
+\newblock Billion-scale similarity search with GPUs.
+\newblock \textit{arXiv preprint arXiv:1702.08734}.
+
+\bibitem[Liu et~al.(2019)Liu, Ott, Goyal, Du, Joshi, Chen, Levy, Lewis, Zettlemoyer, and Stoyanov]{liu2019roberta}
+Yinhan Liu, Myle Ott, Naman Goyal, Jingfei Du, Mandar Joshi, Danqi Chen, Omer Levy, Mike Lewis, Luke Zettlemoyer, and Veselin Stoyanov. 2019.
+\newblock RoBERTa: A robustly optimized {BERT} pretraining approach.
+\newblock \textit{arXiv preprint arXiv:1907.11692}.
 
 \bibitem[Reimers and Gurevych(2019)]{reimers2019sentence}
 Nils Reimers and Iryna Gurevych. 2019.
