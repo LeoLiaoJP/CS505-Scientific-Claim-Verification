@@ -7,4 +7,4 @@ cd "$PROJECT_ROOT"
 python -m pip install -r requirements_gpu.txt
 python scripts/run_midway_experiments.py \
   --preset gpu_midway \
-  --output-dir results/midway_v100
+  --output-dir results/midway_local_gpu_10ep

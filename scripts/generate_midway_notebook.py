@@ -29,7 +29,7 @@ def main() -> None:
             "## Experiment Setup\n\n"
             "- Dataset: SciFact (`corpus.jsonl`, `claims_train.jsonl`, `claims_dev.jsonl`)\n"
             "- Baseline retriever: TF-IDF cosine retrieval\n"
-            "- Stronger retriever presets: `all-MiniLM-L6-v2` for CPU quick runs, `all-mpnet-base-v2` for V100 runs\n"
+            "- Stronger retriever presets: `all-MiniLM-L6-v2` for CPU quick runs, `all-mpnet-base-v2` for local CUDA/GPU runs\n"
             "- Baseline verifier: TF-IDF + multinomial logistic regression\n"
             "- Stronger verifier presets: lightweight BERT for CPU quick runs, `SciBERT` or `PubMedBERT` for GPU runs\n"
             "- Main outputs: retrieval metrics, oracle document classification metrics, and end-to-end joint evidence hit"
@@ -40,7 +40,7 @@ def main() -> None:
         nbf.v4.new_markdown_cell(
             "## Recommended Presets\n\n"
             "- `cpu_quick`: sanity check on a local CPU\n"
-            "- `gpu_midway`: recommended for your actual midway report on a V100\n"
+            "- `gpu_midway`: recommended for the actual midway report on a local CUDA/GPU machine\n"
             "- `gpu_strong`: optional stronger run if you have extra GPU time"
         )
     )

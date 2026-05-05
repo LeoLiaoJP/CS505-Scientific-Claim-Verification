@@ -23,6 +23,8 @@ The experiments compare TF-IDF retrieval and dense MPNet retrieval, logistic reg
 - `src/scifact_midway/pipeline.py`: core retrieval, training, evaluation, and plotting pipeline.
 - `scripts/run_midway_experiments.py`: midway experiment runner.
 - `scripts/run_final_experiments.py`: final experiment runner for error analysis, sentence selection, and PubMedBERT comparison.
+- `scripts/run_midway_local_gpu.sh`: convenience shell script for local CUDA/GPU midway runs.
+- `LOCAL_GPU_RUN.md`: notes for reproducing experiments on the local GPU setup used for this project.
 - `NLP_final_report.tex`: final report LaTeX source.
 - `results/final_experiments/final_summary.md`: final experiment summary.
 - `results/final_experiments/final_model_comparison.csv`: oracle verifier metrics.
@@ -47,4 +49,3 @@ The SciFact data is downloaded automatically if it is not already present under 
 ## Notes
 
 Large local artifacts are intentionally not tracked, including the virtual environment, downloaded dataset, pretrained checkpoints, model weights, and embedding caches.
-
