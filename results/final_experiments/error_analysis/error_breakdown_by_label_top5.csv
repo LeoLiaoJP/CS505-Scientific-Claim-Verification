@@ -1,0 +1,7 @@
+gold_label_group,status@5,count
+REFUTES,retrieval_miss,9
+REFUTES,stance_error,32
+REFUTES,success,23
+SUPPORTS,retrieval_miss,15
+SUPPORTS,stance_error,34
+SUPPORTS,success,75

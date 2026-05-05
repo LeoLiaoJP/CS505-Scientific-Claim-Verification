@@ -1,0 +1,6 @@
+system,retriever,verifier,evidence_input,joint_hit@3,joint_hit@5
+tfidf_plus_logreg,tfidf,logreg,abstract,0.0479,0.0532
+dense_plus_logreg,dense,logreg,abstract,0.0532,0.0585
+dense_plus_scibert_abstract,dense,scibert,abstract,0.484,0.5213
+dense_plus_scibert_sentence_top2,dense,scibert,sentence_top2,0.4362,0.4734
+dense_plus_pubmedbert_abstract,dense,pubmedbert,abstract,0.5266,0.5638

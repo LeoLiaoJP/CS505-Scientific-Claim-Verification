@@ -1,0 +1,10 @@
+torch
+transformers
+datasets
+scikit-learn
+pandas
+matplotlib
+seaborn
+nbformat
+safetensors
+pypdf

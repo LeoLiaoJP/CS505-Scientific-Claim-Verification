@@ -1,0 +1,79 @@
+claim_id,rank,doc_id,is_gold_doc,gold_label,predicted_label,is_correct_gold_label,prob_noinfo,prob_supports,prob_refutes,claim
+3,5,14717500,True,SUPPORTS,NOINFO,False,0.9968997240066528,0.002905947621911764,0.00019430647080298513,"1,000 genomes project enables mapping of genetic sequence variation consisting of rare variants with larger penetrance effects than common variants."
+5,8,13734012,True,SUPPORTS,REFUTES,False,0.001034940010868013,0.0012804787838831544,0.9976845979690552,1/2000 in UK have abnormal PrP positivity.
+51,1,45638119,True,REFUTES,SUPPORTS,False,0.0008453400805592537,0.998448371887207,0.0007063081138767302,ALDH1 expression is associated with better breast cancer outcomes.
+54,1,49556906,True,REFUTES,SUPPORTS,False,0.0006131244590505958,0.9878969192504883,0.011489996686577797,AMP-activated protein kinase (AMPK) activation increases inflammation-related fibrosis in the lungs.
+57,1,4709641,True,REFUTES,SUPPORTS,False,0.000908411224372685,0.9981414079666138,0.0009501491440460086,"APOE4 expression in iPSC-derived neurons increases AlphaBeta production and tau phosphorylation, delaying GABA neuron degeneration."
+115,1,33872649,True,REFUTES,SUPPORTS,False,0.037426598370075226,0.9613202214241028,0.0012532365508377552,Anthrax spores can be disposed of easily after they are dispersed.
+133,1,16280642,True,SUPPORTS,NOINFO,False,0.9861700534820557,0.013498371466994286,0.0003314699570182711,"Assembly of invadopodia is triggered by focal generation of phosphatidylinositol-3,4-biphosphate and the activation of the nonreceptor tyrosine kinase Src."
+137,1,26016929,True,SUPPORTS,REFUTES,False,0.0008317955071106553,0.0012462364975363016,0.9979220032691956,Asymptomatic visual impairment screening in elderly populations does not lead to improved vision.
+146,1,10582939,True,SUPPORTS,REFUTES,False,0.0010739488061517477,0.030153566971421242,0.9687725305557251,Autologous transplantation of mesenchymal stem cells has lower rates of rejection than induction therapy with anti-interleukin-2 receptor antibodies.
+148,2,1084345,True,SUPPORTS,REFUTES,False,0.0013048500986769795,0.013301351107656956,0.985393762588501,Autophagy declines in aged organisms.
+180,1,16966326,True,REFUTES,SUPPORTS,False,0.0006345099536702037,0.9986714124679565,0.0006941560423001647,Blocking the interaction between TDP-43 and respiratory complex I proteins ND3 and ND6 leads to increased TDP-43-induced neuronal loss.
+183,1,12827098,True,REFUTES,NOINFO,False,0.98834627866745,0.011333596892654896,0.000320099585223943,Bone marrow cells contribute to adult macrophage compartments.
+208,1,13519661,True,SUPPORTS,REFUTES,False,0.0011664227349683642,0.0006924337358213961,0.9981411695480347,CHEK2 is not associated with breast cancer.
+212,4,22038539,True,REFUTES,NOINFO,False,0.9988086223602295,0.0009944692719727755,0.00019697335665114224,CR is associated with higher methylation age.
+219,1,21366394,True,REFUTES,SUPPORTS,False,0.0020832717418670654,0.9961137771606445,0.0018029215279966593,CX3CR1 on the Th2 cells suppresses airway inflammation.
+239,6,14079881,True,SUPPORTS,NOINFO,False,0.9868388772010803,0.01228373870253563,0.0008773196605034173,Cellular aging closely links to an older appearance.
+248,1,1568684,True,SUPPORTS,NOINFO,False,0.9108286499977112,0.08856956660747528,0.0006017514388076961,Chenodeosycholic acid treatment increases whole-body energy expenditure.
+249,1,1568684,True,REFUTES,NOINFO,False,0.9972883462905884,0.00028504268266260624,0.0024265856482088566,Chenodeosycholic acid treatment reduces whole-body energy expenditure.
+261,6,1122279,True,SUPPORTS,REFUTES,False,0.13554246723651886,0.009682973846793175,0.8547745943069458,"Chronic aerobic exercise alters endothelial function, improving vasodilating mechanisms mediated by NO."
+261,8,10697096,True,SUPPORTS,NOINFO,False,0.9995997548103333,8.645650086691603e-05,0.0003137837047688663,"Chronic aerobic exercise alters endothelial function, improving vasodilating mechanisms mediated by NO."
+274,1,11614737,True,REFUTES,SUPPORTS,False,0.0005154942627996206,0.9960298538208008,0.0034546279348433018,Combination nicotine replacement therapies with varenicline or bupropion lead to significantly higher long-term abstinence rates at 52 weeks than varenicline monotherapy.
+275,1,4961038,True,SUPPORTS,NOINFO,False,0.8101687431335449,0.18834176659584045,0.0014894612831994891,Combining phosphatidylinositide 3-kinase and MEK 1/2 inhibitors is effective at treating KRAS mutant tumors.
+275,6,14241418,True,SUPPORTS,NOINFO,False,0.9996265172958374,0.0002496887755114585,0.00012384653382468969,Combining phosphatidylinositide 3-kinase and MEK 1/2 inhibitors is effective at treating KRAS mutant tumors.
+279,1,14376683,True,SUPPORTS,REFUTES,False,0.0019664005376398563,0.08850769698619843,0.909525990486145,Commelina yellow mottle virus' (ComYMV) genome consists of 7489 baise pairs.
+298,2,39381118,True,SUPPORTS,REFUTES,False,0.0030608277302235365,0.022017331793904305,0.9749217629432678,Cytochrome c is released from the mitochondrial intermembrane space to cytosol during apoptosis.
+327,1,17997584,True,SUPPORTS,REFUTES,False,0.0006415527896024287,0.001366148702800274,0.9979922771453857,Deletion of αvβ8 does not result in a spontaneous inflammatory phenotype.
+338,1,23349986,True,REFUTES,SUPPORTS,False,0.0010651141637936234,0.9683388471603394,0.03059602528810501,Dexamethasone decreases risk of postoperative bleeding.
+385,3,9955779,True,SUPPORTS,NOINFO,False,0.9191681742668152,0.07988578081130981,0.0009460714645683765,Epigenetic modulating agents (EMAs) modulate antitumor immune response in a cancer model system.
+431,4,28937856,True,SUPPORTS,NOINFO,False,0.9880555272102356,0.004795192740857601,0.007149395998567343,FoxO3a activation in neuronal death is mediated by reactive oxygen species (ROS).
+475,7,18678095,True,SUPPORTS,NOINFO,False,0.9989134073257446,0.0009352281922474504,0.00015133584383875132,Glycolysis is one of the primary glycometabolic pathways in cells.
+501,1,17930286,True,SUPPORTS,REFUTES,False,0.0009013244998641312,0.0009764695423655212,0.9981221556663513,Headaches are not correlated with cognitive impairment.
+513,1,13230773,True,REFUTES,NOINFO,False,0.9949753284454346,0.0024044648744165897,0.002620236948132515,High cardiopulmonary fitness causes increased mortality rate.
+521,1,34873974,True,SUPPORTS,NOINFO,False,0.9991855025291443,0.00044059817446395755,0.00037393081584014,High-sensitivity cardiac troponin T (HSCT-T) dosage may not be diagnostic if the onset of symptoms occurs less than 3 hours before acute myocardial injury (AMI).
+525,1,13639330,True,SUPPORTS,NOINFO,False,0.8462620377540588,0.15291643142700195,0.000821460853330791,Histone demethylase recruitment and a transient decrease in histone methylation is necessary for ligand-dependent induction of transcription by nuclear receptors.
+532,1,12991445,True,REFUTES,NOINFO,False,0.993436872959137,0.0003268150903750211,0.006236191838979721,Hyperfibrinogenemia decreases rates of femoropopliteal bypass thrombosis.
+533,1,12991445,True,SUPPORTS,NOINFO,False,0.9984580278396606,0.0003729294694494456,0.0011690740939229727,Hyperfibrinogenemia increases rates of femoropopliteal bypass thrombosis.
+539,1,13282296,True,SUPPORTS,REFUTES,False,0.0012367810122668743,0.002592820907011628,0.9961703419685364,Hypoglycemia increases the risk of dementia.
+578,1,8764879,True,REFUTES,SUPPORTS,False,0.32745110988616943,0.6705750226974487,0.0019738986156880856,"In mouse models, the loss of CSF1R facilitates MOZ-TIF2-induced leuekmogenesis."
+589,1,10984005,True,SUPPORTS,REFUTES,False,0.0009483201429247856,0.0008839315851218998,0.9981676340103149,"In young and middle-aged adults, current or remote uses of ADHD medications do not increase the risk of serious cardiovascular events."
+593,1,19675911,True,SUPPORTS,REFUTES,False,0.000871522759553045,0.001425715978257358,0.9977027773857117,Incidence of heart failure decreased by 10% in women since 1979.
+597,7,36355784,True,SUPPORTS,REFUTES,False,0.0026478597428649664,0.2646065354347229,0.7327455878257751,Incidence rates of cervical cancer have decreased.
+636,2,24294572,True,SUPPORTS,NOINFO,False,0.9984439015388489,0.0013869352405890822,0.00016907787357922643,"Inositol lipid 3-phosphatase PTEN converts Ptdlns(3,4)P 2 into phosphatidylinositol 4-phosphate."
+718,1,17587795,True,REFUTES,SUPPORTS,False,0.0006444703903980553,0.9986224174499512,0.0007331388769671321,Low nucleosome occupancy correlates with low methylation levels across species.
+756,4,2831620,True,SUPPORTS,NOINFO,False,0.9921686053276062,0.0075200204737484455,0.00031145100365392864,Many proteins in human cells can be post-translationally modified at lysine residues via acetylation.
+759,1,1805641,True,REFUTES,SUPPORTS,False,0.0016108861891552806,0.9977426528930664,0.0006464227335527539,Mathematical models predict that using Artemisinin-based combination therapy over nongametocytocidal drugs have a dramatic impact in reducing malaria transmission.
+770,1,15476777,True,SUPPORTS,REFUTES,False,0.0007995272753760219,0.0076079596765339375,0.991592526435852,Metastatic colorectal cancer treated with a single agent fluoropyrimidines resulted in reduced efficacy and lower quality of life when compared with oxaliplatin-based chemotherapy in elderly patients.
+781,1,24338780,True,REFUTES,SUPPORTS,False,0.0008636629208922386,0.9984076619148254,0.0007286990294232965,Mice that lack Interferon-γ or its receptor exhibit high resistance to experimental autoimmune myocarditis.
+811,1,19799455,True,REFUTES,NOINFO,False,0.9966733455657959,0.0030269278213381767,0.0002997063857037574,Mutant mice lacking SVCT2 have greatly increased ascorbic acid levels in both brain and adrenals.
+832,1,30303335,True,SUPPORTS,NOINFO,False,0.9934355020523071,0.006328206043690443,0.0002363170642638579,NFAT4 activation requires IP3R-mediated Ca2+ mobilization.
+859,4,1982286,True,REFUTES,SUPPORTS,False,0.0008355802274309099,0.9985542893409729,0.0006101307226344943,Normal expression of RUNX1 has tumor-promoting effects.
+873,3,3315558,True,REFUTES,NOINFO,False,0.9993170499801636,0.00034385427716188133,0.0003391851205378771,Obesity is determined solely by environmental factors.
+873,9,27393799,True,REFUTES,NOINFO,False,0.9992679953575134,0.00032363683567382395,0.00040831704973243177,Obesity is determined solely by environmental factors.
+873,10,29025270,True,REFUTES,NOINFO,False,0.9988369345664978,0.00033376613282598555,0.0008293123100884259,Obesity is determined solely by environmental factors.
+879,1,8426046,True,REFUTES,NOINFO,False,0.9990598559379578,0.00023765496734995395,0.0007026116945780814,Occupancy of ribosomes by IncRNAs do not make functional peptides.
+880,2,8426046,True,SUPPORTS,NOINFO,False,0.8581778407096863,0.14098578691482544,0.0008362879161722958,Occupancy of ribosomes by IncRNAs mirror 5 0-UTRs
+922,1,17077004,True,REFUTES,SUPPORTS,False,0.0006698897923342884,0.9982448816299438,0.0010852168779820204,Patients in stable partnerships have a faster progression from HIV to AIDS.
+993,1,16472469,True,REFUTES,SUPPORTS,False,0.0005342655931599438,0.9985866546630859,0.0008791363216005266,Pyridostatin destabilizes the G - quadruplex in the telomeric region.
+1020,2,9433958,True,SUPPORTS,NOINFO,False,0.9996935129165649,0.0001308167993556708,0.0001756897399900481,Rapid up-regulation and higher basal expression of interferon-induced genes increase survival of granule cell neurons that are infected by West Nile virus.
+1021,2,9433958,True,REFUTES,NOINFO,False,0.9997386336326599,8.315596642205492e-05,0.0001781162864062935,Rapid up-regulation and higher basal expression of interferon-induced genes reduce survival of granule cell neurons that are infected by West Nile virus.
+1029,1,11899391,True,REFUTES,SUPPORTS,False,0.0016634834464639425,0.9976457953453064,0.0006907396600581706,Reduced responsiveness to interleukin-2 in regulatory T cells is associated with greater resistance to autoimmune diseases such as Type 1 Diabetes.
+1029,3,13940200,True,REFUTES,SUPPORTS,False,0.004756640642881393,0.9945746064186096,0.0006687316345050931,Reduced responsiveness to interleukin-2 in regulatory T cells is associated with greater resistance to autoimmune diseases such as Type 1 Diabetes.
+1029,6,13923140,True,REFUTES,SUPPORTS,False,0.0026250111404806376,0.9967881441116333,0.0005868642474524677,Reduced responsiveness to interleukin-2 in regulatory T cells is associated with greater resistance to autoimmune diseases such as Type 1 Diabetes.
+1088,2,37549932,True,REFUTES,NOINFO,False,0.9982897639274597,0.001506742206402123,0.0002035174984484911,Silencing of Bcl2 is important for the maintenance and progression of tumors.
+1104,1,3898784,True,SUPPORTS,REFUTES,False,0.0012153212446719408,0.046302977949380875,0.9524818062782288,Stroke patients with prior use of direct oral anticoagulants have a lower risk of in-hospital mortality than stroke patients with prior use of warfarin.
+1130,1,17997584,True,REFUTES,SUPPORTS,False,0.002367191482335329,0.9959492683410645,0.0016835149144753814,T regulatory cells (tTregs) lacking αvβ8 are more adept at suppressing pathogenic T-cell responses during active inflammation.
+1140,1,12009265,True,REFUTES,SUPPORTS,False,0.0005375262699089944,0.994917631149292,0.004544819705188274,Taking 400mg of α-tocopheryl acetate helps to prevent prostate cancer.
+1146,1,13906581,True,SUPPORTS,REFUTES,False,0.0012632692232728004,0.000911677663680166,0.9978251457214355,Teaching hospitals do not provide better care than non-teaching hospitals.
+1180,4,31272411,True,SUPPORTS,NOINFO,False,0.9995075464248657,0.00035692224628292024,0.00013547240814659745,The PRR MDA5 is a sensor of RNA virus infection.
+1185,4,16737210,True,SUPPORTS,NOINFO,False,0.9820488095283508,0.014630348421633244,0.0033207410015165806,The US health care system can save up to $750 million if 7% of patients waiting for kidney transplants participate in the optimized national kidney paired donation program.
+1232,1,13905670,True,REFUTES,SUPPORTS,False,0.0008019991219043732,0.998551070690155,0.0006469465442933142,The minor G allele of FOXO3 is related to more severe symptoms of Crohn's Disease.
+1266,3,37480103,True,SUPPORTS,NOINFO,False,0.7856438159942627,0.20858187973499298,0.005774303339421749,"The risk of breast cancer among parous women increases with placental weight of pregnancies, and this association is strongest for premenopausal breast cancer."
+1270,1,13900610,True,REFUTES,SUPPORTS,False,0.0008924494031816721,0.9979925155639648,0.001115018269047141,The risk of male prisoners harming themselves is ten times that of female prisoners.
+1290,1,4687948,True,SUPPORTS,REFUTES,False,0.0009822670836001635,0.0008352689910680056,0.9981824159622192,There is an inverse relationship between hip fractures and statin use.
+1298,1,11718220,True,SUPPORTS,REFUTES,False,0.0008440247038379312,0.05531497299671173,0.9438410401344299,Thigh-length graduated compression stockings (GCS) did not reduce deep vein thrombosis in patients admitted to hospital who are immobile because of acute stroke.
+1335,1,27910499,True,SUPPORTS,NOINFO,False,0.9879565834999084,0.011626140214502811,0.00041732395766302943,UCB T cells maintain high TCR diversity after transplantation.
+1336,1,27910499,True,REFUTES,NOINFO,False,0.9887228012084961,0.0005479162209667265,0.010729280300438404,UCB T cells reduce TCR diversity after transplantation.
+1337,9,20231138,True,SUPPORTS,NOINFO,False,0.9989765882492065,0.0008157721604220569,0.00020767428213730454,Ubiquitin ligase UBC13 generates a K63-linked polyubiquitin moiety at PCNA K164.
+1382,2,17755060,True,REFUTES,SUPPORTS,False,0.000675257237162441,0.9984124898910522,0.0009122143383137882,aPKCz causes tumour enhancement by affecting glutamine metabolism.

@@ -1,0 +1,41 @@
+# Python / local environment
+__pycache__/
+*.py[cod]
+.venv/
+.venv-gpu/
+.env
+
+# Large datasets and external checkouts
+data/
+external/
+
+# Trained checkpoints and embedding caches
+results/*
+!results/final_experiments/
+results/**/models/
+results/**/cache/
+*.safetensors
+*.pt
+*.pth
+*.ckpt
+*.npy
+
+# Generated archives and LaTeX build products
+*.pdf
+*.zip
+*.tar.gz
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+
+# Duplicate packaged deliverables are not needed in the source repository.
+deliverables/
+midway_figures/
+
+# Runtime logs from local experiment runs.
+results/final_experiments/*.log

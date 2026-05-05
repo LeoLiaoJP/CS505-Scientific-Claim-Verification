@@ -1,0 +1,2 @@
+n_gold_doc_pairs,mrr,rationale_hit@1,rationale_coverage@1,rationale_hit@2,rationale_coverage@2,rationale_hit@3,rationale_coverage@3
+209.0,0.6519,0.4737,0.3307,0.6507,0.5019,0.7895,0.6285

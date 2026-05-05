@@ -1,0 +1,5 @@
+system,model,accuracy,macro_f1,f1_noinfo,f1_supports,f1_refutes
+logreg_abstract,logreg_abstract,0.8361,0.3589,0.9257,0.114,0.037
+scibert_abstract,scibert_abstract,0.9134,0.6762,0.9689,0.6691,0.3906
+scibert_sentence_top2,scibert_sentence_top2,0.9049,0.6536,0.9649,0.6113,0.3846
+pubmedbert_abstract,pubmedbert_abstract,0.9035,0.6739,0.9639,0.6577,0.4

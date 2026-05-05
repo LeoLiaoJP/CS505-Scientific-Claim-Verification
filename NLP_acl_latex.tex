@@ -1,0 +1,113 @@
+\documentclass[11pt]{article}
+\usepackage[preprint]{acl}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{inconsolata}
+\usepackage{graphicx}
+\usepackage{amsmath}
+
+% Slightly enlarge the title box to fit authors cleanly.
+\setlength\titlebox{5.0cm}
+
+\title{Retrieval-Based Scientific Claim Verification with SciFact}
+
+\author{Jiapei Liao \\
+  Boston University \\
+  \texttt{jiapei03@bu.edu}
+  \And
+  Yuxiang Liu \\
+  Boston University \\
+  \texttt{mat1900@bu.edu}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This proposal describes an \textbf{empirical project} on scientific claim verification. Given a scientific claim and a closed corpus of biomedical paper abstracts, we aim to retrieve evidence-bearing abstracts and predict whether the retrieved evidence \textsc{Supports}, \textsc{Refutes}, or provides \textsc{NoInfo} for the claim. We will use SciFact, which contains 1,409 claims and 5,183 biomedical abstracts, as a manageable but realistic benchmark for evidence-grounded scientific reasoning \citep{wadden2020fact}. Our plan is to compare a simple lexical pipeline against a stronger dense-retrieval-plus-encoder pipeline, using sentence embeddings for retrieval and SciBERT or RoBERTa for claim verification. We will evaluate both component-level and end-to-end performance to determine whether gains come mainly from better retrieval or better stance prediction.
+\end{abstract}
+
+\section{Introduction}
+This proposal outlines an \textbf{empirical project} on scientific claim verification. We will study how to build a system that reads a scientific claim, searches a corpus of paper abstracts, and predicts whether the retrieved evidence \textsc{Supports} the claim, \textsc{Refutes} it, or provides \textsc{NoInfo}. We will use the SciFact dataset because it offers a realistic benchmark for evidence-based scientific reasoning while still being manageable for a course project. SciFact is a closed-corpus benchmark with 1,409 expert-written scientific claims, a corpus of 5,183 biomedical abstracts, and a standard split of 809 training claims, 300 development claims, and 300 test claims \citep{wadden2020fact}. To keep the project scope realistic, we will focus on abstract retrieval and abstract-level stance classification; sentence-level rationale extraction will be treated as a possible extension rather than a required first-stage goal.
+
+\subsection{What Are We Trying To Do?}
+Our project studies a central NLP question: can a model retrieve evidence that is not only topically related to a claim, but actually justifies or refutes it? This task is important because scientific search is not the same as keyword search. An abstract may mention the same terms as a claim and still fail to provide useful evidence, while another abstract with different wording may directly support or refute it. SciFact was introduced specifically to study this setting of evidence-grounded scientific claim verification \citep{wadden2020fact}.
+
+Formally, let $c$ be a claim and let $\mathcal{D}$ be a corpus of scientific abstracts. Our system has two stages. First, a retriever returns the top-$k$ candidate abstracts,
+\begin{equation}
+R_k(c) = \operatorname{TopK}_{a \in \mathcal{D}}\; \mathrm{sim}(g(c), g(a)),
+\end{equation}
+where $g(\cdot)$ maps text into an embedding space. Then, for each retrieved pair $(c,a)$, a classifier predicts a label,
+\begin{equation}
+\hat{y} = f_{\theta}(c,a), \qquad \hat{y} \in \{\textsc{Supports},\textsc{Refutes},\textsc{NoInfo}\}.
+\end{equation}
+The system succeeds only if it retrieves useful evidence and assigns the correct stance label.
+
+\subsection{Example of Input and Output}
+Our project has two clear components.
+
+\paragraph{1. The Evidence Retriever}
+This module searches the SciFact corpus for abstracts that may contain evidence.
+\begin{itemize}
+    \item \textbf{Input:} A natural-language scientific claim and the full abstract corpus.
+    \item \textbf{Output:} A ranked top-$k$ list of candidate abstracts.
+\end{itemize}
+
+\paragraph{2. The Claim Verifier}
+This module decides whether a retrieved abstract supports the claim, refutes it, or contains no real evidence.
+\begin{itemize}
+    \item \textbf{Input:} A claim--abstract pair $(c,a)$.
+    \item \textbf{Output:} One label from \textsc{Supports}, \textsc{Refutes}, or \textsc{NoInfo}.
+\end{itemize}
+
+For example, if the claim is ``Drug X reduces the risk of disease Y,'' the retriever should find relevant abstracts about Drug X and disease Y, and the verifier should judge whether each abstract actually supports, refutes, or fails to verify that statement.
+
+\subsection{How Will We Build and Evaluate the System?}
+We will use the SciFact corpus and claim splits as our dataset \citep{wadden2020fact}. Our software stack will include Python, PyTorch, Hugging Face Transformers, Sentence-Transformers, FAISS, and scikit-learn. For dense retrieval, we plan to use a sentence embedding model such as Sentence-BERT with cosine similarity over a FAISS index \citep{reimers2019sentence,johnson2017billion}. For verification, we plan to fine-tune a pretrained encoder such as SciBERT or RoBERTa on claim--abstract pairs \citep{beltagy2019scibert,liu2019roberta}. If full fine-tuning is too expensive, we will freeze the encoder and train a lightweight classifier on top.
+
+Our \textbf{baseline} will be simple and easy to implement: the official SciFact TF--IDF retriever, followed by a multinomial logistic regression classifier over TF--IDF features of the concatenated claim and abstract. This gives us a transparent lexical baseline for the full pipeline.
+
+Our main system will replace both stages with stronger pretrained models. For retrieval, we plan to use a sentence embedding model with cosine similarity over a FAISS index for dense retrieval. For verification, we plan to fine-tune a pretrained encoder such as SciBERT or RoBERTa on claim--abstract pairs. We will compare whether dense retrieval improves over TF--IDF and whether a scientific-domain or strong general-domain encoder improves over the lexical baseline.
+
+We will evaluate retrieval with Recall@$k$ (for example, $k \in \{3,5,10\}$), mean reciprocal rank, and evidence hit rate. We will evaluate classification with macro-F1, per-class F1, and accuracy. Because this is a pipeline, we will also report an end-to-end metric: whether a gold evidence abstract appears in the top-$k$ retrieved set and receives the correct label. We will consider the project successful if dense retrieval improves evidence recall over TF--IDF and the encoder-based verifier improves macro-F1 over the lexical baseline.
+
+\subsection{How Will This Project Be Helpful?}
+This project is useful for three reasons:
+\begin{itemize}
+    \item \textbf{Improving Scientific Search:} It studies how NLP systems can move from topical retrieval to evidence-based claim verification.
+    \item \textbf{Understanding Errors:} Because the system is modular, we can separate retrieval failures from classification failures and analyze them clearly.
+    \item \textbf{Building a Feasible End-to-End Project:} SciFact is realistic enough to be meaningful, but compact enough for controlled experimentation in a course setting.
+\end{itemize}
+
+\begin{thebibliography}{9}
+
+\bibitem[Beltagy et~al.(2019)Beltagy, Lo, and Cohan]{beltagy2019scibert}
+Iz Beltagy, Kyle Lo, and Arman Cohan. 2019.
+\newblock {SciBERT}: A pretrained language model for scientific text.
+\newblock In \textit{Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP)}, pages 3615--3620.
+
+\bibitem[Johnson et~al.(2017)Johnson, Douze, and J\'egou]{johnson2017billion}
+Jeff Johnson, Matthijs Douze, and Herv\'{e} J\'{e}gou. 2017.
+\newblock Billion-scale similarity search with GPUs.
+\newblock \textit{arXiv preprint arXiv:1702.08734}.
+
+\bibitem[Liu et~al.(2019)Liu, Ott, Goyal, Du, Joshi, Chen, Levy, Lewis, Zettlemoyer, and Stoyanov]{liu2019roberta}
+Yinhan Liu, Myle Ott, Naman Goyal, Jingfei Du, Mandar Joshi, Danqi Chen, Omer Levy, Mike Lewis, Luke Zettlemoyer, and Veselin Stoyanov. 2019.
+\newblock RoBERTa: A robustly optimized {BERT} pretraining approach.
+\newblock \textit{arXiv preprint arXiv:1907.11692}.
+
+\bibitem[Reimers and Gurevych(2019)]{reimers2019sentence}
+Nils Reimers and Iryna Gurevych. 2019.
+\newblock Sentence-BERT: Sentence embeddings using siamese {BERT}-networks.
+\newblock In \textit{Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP)}, pages 3982--3992.
+
+\bibitem[Wadden et~al.(2020)Wadden, Lin, Lo, Wang, van Zuylen, Cohan, and Hajishirzi]{wadden2020fact}
+David Wadden, Shanchuan Lin, Kyle Lo, Lucy Lu Wang, Madeleine van Zuylen, Arman Cohan, and Hannaneh Hajishirzi. 2020.
+\newblock Fact or fiction: Verifying scientific claims.
+\newblock In \textit{Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP)}, pages 7534--7550.
+
+\end{thebibliography}
+
+\end{document}
