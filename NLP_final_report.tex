@@ -230,12 +230,17 @@ For Dense+\textsc{SciBERT}, the top-5 error breakdown is: 98 successful claims, 
 \begin{table}[t]
 \centering
 \small
-\begin{tabular}{lccc}
+\begin{tabular}{llc}
 \hline
-\textbf{Analysis} & \textbf{Metric 1} & \textbf{Metric 2} & \textbf{Metric 3} \\
+\textbf{Analysis} & \textbf{Metric} & \textbf{Value} \\
 \hline
-Rationale selection & Hit@1 0.474 & Hit@2 0.651 & Cov.@2 0.502 \\
-Top-5 pipeline status & Success 52.1\% & Retrieval miss 12.8\% & Stance error 35.1\% \\
+Rationale selection & Hit@1 & 0.474 \\
+Rationale selection & Hit@2 & 0.651 \\
+Rationale selection & Coverage@2 & 0.502 \\
+\hline
+Top-5 pipeline status & Success & 52.1\% \\
+Top-5 pipeline status & Retrieval miss & 12.8\% \\
+Top-5 pipeline status & Stance error & 35.1\% \\
 \hline
 \end{tabular}
 \caption{Final-stage evidence-selection and error-analysis results.}
